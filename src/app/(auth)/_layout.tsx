@@ -3,3 +3,15 @@ Sobreposição de telas: Stack Navigator, 3 funções para manipular o empilhame
 push(): empilha a tela atual sobre a anterior
 back(): remove a tela atual e retorna à tela anterior empilhada
 replace(): subtitui a tela atual pela próxima */
+
+import { Stack } from "expo-router";
+
+export default function AuthLayout() {
+    return (
+        <Stack screenOptions={{headerShown: true}}>
+            <Stack.Screen name="index" options={{ title: "Login" }}/>
+        { /*<Stack.Screen name="register" options={{ title: "Cadastro" }}/> */}
+        { /*<Stack.Screen name="resetPassword" options={{ title: "Esqueci minha senha" }}/> */}
+        </Stack>
+    )
+}
