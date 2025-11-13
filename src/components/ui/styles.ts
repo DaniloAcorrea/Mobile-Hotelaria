@@ -54,15 +54,20 @@ export const global = StyleSheet.create({
         borderColor: "#420350ff",
         borderRadius: 10
     },
-    inputError: {
-       backgroundColor: "#fed5d5ff",
-        borderColor: "rgba(139, 0, 0, 1)",
-    },
     input: {
         flex: 1,
         fontSize: 17,
         color: "#000",
         paddingHorizontal: width * 0.02
+    },
+    eyeIcon: {
+        position: "absolute",
+        right: 12,
+        top: 42
+    },
+    inputError: {
+        backgroundColor: "#fed5d5ff",
+        borderColor: "rgba(139, 0, 0, 1)",
     },
     errorText: {
         color: "red",
@@ -70,4 +75,18 @@ export const global = StyleSheet.create({
         fontSize: 15,
         marginTop: height * 0.01   
     },
+    primaryButton: {
+        backgroundColor: "#420350ff",
+        borderRadius: 10,
+        padding: width * 0.025,
+        marginTop: width * 0.02,
+        alignItems: "center"
+    },
+    primaryButtonDisabled: {
+        backgroundColor: "#9ca3af",
+        borderRadius: 10,
+    },
+    primaryButtonText: {
+        color: "#fff"
+    }
 })  
