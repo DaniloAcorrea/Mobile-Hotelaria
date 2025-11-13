@@ -1,6 +1,6 @@
 import AuthContainer from "../ui/AuthContainer";
+import PasswordField from "../ui/PasswordField";
 import TextField from "../ui/TextField";
-
 
 const RenderLogin = () => {
     return (
@@ -12,8 +12,16 @@ const RenderLogin = () => {
             {/* children */}    
             <TextField
                 label="E-mail"
-                icon="email">
-            </TextField>
+                icon="email"
+                placeholder="user@email.com"
+            />
+
+            <PasswordField
+                label="Senha"
+                placeholder="*********"
+            />
+
+
         </AuthContainer>
     )
 };

@@ -62,7 +62,6 @@ export const global = StyleSheet.create({
         flex: 1,
         fontSize: 17,
         color: "#000",
-        fontWeight: "600",
         paddingHorizontal: width * 0.02
     },
     errorText: {
