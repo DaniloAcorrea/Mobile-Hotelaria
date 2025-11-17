@@ -87,6 +87,8 @@ export const global = StyleSheet.create({
         borderRadius: 10,
     },
     primaryButtonText: {
-        color: "#fff"
+        color: "#fff",
+        fontSize: 17,
+        fontWeight: 600
     }
 })  
