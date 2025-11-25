@@ -10,7 +10,7 @@ type NameIcon =
 
 type Props = TextInputProps & {
     label: string;
-    errorText?: string;
+    errorText?: string; 
     icon?: NameIcon;
 }
 
