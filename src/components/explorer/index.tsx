@@ -1,12 +1,13 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import AuthContainer from "../ui/AuthContainer";
+import DateSelector from "../ui/DateSelector";
 
 const RenderExplorer = () => {
   return (
     <AuthContainer>
         {/*children */}
             <View>
-                <Text>Esta será a futura tela home</Text>
+                <DateSelector />
             </View>
     </AuthContainer>
   );

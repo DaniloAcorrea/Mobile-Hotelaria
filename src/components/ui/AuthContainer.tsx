@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { global } from "./styles";
 
 type Props = {
-  title?: string;   //PROP TÍTULO OPCIONAL
+  title?: string;   
   subtitle?: string;
   icon?: keyof typeof FontAwesome6.glyphMap;
   children: React.ReactNode;
@@ -28,7 +28,7 @@ const AuthContainer = ({ title, subtitle, icon, children }: Props) => {
           <View style={global.header}>
 
             {!!icon && <FontAwesome6 name={icon} size={30} color="purple" />}
-            {!!title && <Text style={global.title}>{title}</Text>}  {/* SE EXISTIR TÍTULO, RENDERIZA*/}
+            {!!title && <Text style={global.title}>{title}</Text>}  
             {!!subtitle && <Text style={global.subtitle}>{subtitle}</Text>}
 
           </View>
