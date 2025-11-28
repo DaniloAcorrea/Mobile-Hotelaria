@@ -1,41 +1,34 @@
-import { useState } from "react";
-import { Text, View } from "react-native";
-import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
-
+import { Dimensions, View } from "react-native";
+import DatePicker, { getToday } from "react-native-modern-datepicker";
 type Props = {
-  label?: string;
+  onSelectDate: (date: string) => void;
 };
-const DateSelector = ({ label }: Props) => {
-  const today = new Date();
-  console.log(today);
-  const tomorrow = new Date(today.getDate() + 1);
-  console.log(tomorrow);
-  const startDate = getFormatedDate(tomorrow, "YYYY/MM/DD h:m");
-  console.log(startDate);
-
-  const [selectDate, setSelectedDate] = useState("");
+const DateSelector = ({onSelectDate} : Props) => {
+  const { width, height } = Dimensions.get("window"); //Componente para dimensionar largura e altura (responsividade)
+  const today = getToday();
   return (
     <View>
-      {!!label && <Text>{label}</Text>}
       <DatePicker
         mode="calendar"
         options={{
-          backgroundColor: "#090C08",
-          textHeaderColor: "#FFA25B",
-          textDefaultColor: "#F6E7C1",
-          selectedTextColor: "#fff",
-          mainColor: "#F4722B",
-          textSecondaryColor: "#D6C7A1",
-          borderColor: "rgba(122, 146, 165, 0.1)",
+          backgroundColor: "#f0f0f0ff", //Fundo (background)
+          textHeaderColor: "#9e62acff", //Mês
+          textDefaultColor: "#420350ff", //Número (data)
+          selectedTextColor: "#fff", //Cor do número (data) quando selecionado
+          mainColor: "#9e62acff", //Setas laterais e seletor
+          textSecondaryColor: "#420350ff", //Dia da semana
+          borderColor: "#9e62acff", //Borda
+          textFontSize: 14, //Tamanho da fonte (dias da semana e número -> data)
+          textHeaderFontSize: 15, //Tamanho da fonte (mês)
         }}
-        style={{borderRadius: 15}}
+        style={{ borderRadius: 15, width: width * 0.65, height: "auto" }}
         isGregorian={true}
-        minimumDate={startDate}
-        selected={selectDate}
-        onSelectedChange={date => setSelectedDate(date)}
+        minimumDate={today}
+        onSelectedChange={(date) => {
+          onSelectDate(date);
+        }}
       />
     </View>
   );
 };
-
 export default DateSelector;

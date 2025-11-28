@@ -58,7 +58,7 @@ export const global = StyleSheet.create({
         flex: 1,
         fontSize: 17,
         color: "#000",
-        paddingHorizontal: width * 0.02
+        paddingHorizontal: width * 0.01
     },
     eyeIcon: {
         position: "absolute",
