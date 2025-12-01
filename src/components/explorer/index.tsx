@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dimensions, TouchableOpacity, View } from "react-native";
 import AuthContainer from "../ui/AuthContainer";
 import DateSelector from "../ui/DateSelector";
+import RoomCard from "../ui/RoomCard";
 import TextField from "../ui/TextField";
 const RenderExplorer = () => {
   const { width, height } = Dimensions.get("window");                                                       //Utilizarei as dimensões
@@ -37,6 +38,20 @@ const RenderExplorer = () => {
             <DateSelector onSelectDate={(date) => { setCheckOut(date); }} /> )}
         </View>                                                                                             {/*View do check-out que fecha aqui */}
       </View>
+
+      <RoomCard 
+        label="Apartamento"
+        icon={{
+          lib: "FontAwesome5",
+          name: "bed"
+        }}
+        description={{
+          title: "Características do quarto",
+          text: "1 cama de casal\n2 camas de solteiro",
+          price: 180.90
+        }}
+      />
+
     </AuthContainer>
   )};
 export default RenderExplorer;
