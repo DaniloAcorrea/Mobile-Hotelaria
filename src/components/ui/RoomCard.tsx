@@ -27,7 +27,7 @@ const RoomCard = ({ image, label, description, icon }: Props) => {
         <View style={styles.container}>
           <View style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-evenly"}}>
             {!!icon && (
-              <View>
+              <View style={{marginTop: height * 0.04}}>
                 {icon.lib === "MaterialIcons" && (
                   <MaterialIcons name={icon.name} size={23} color="purple" />
                 )}
@@ -45,9 +45,9 @@ const RoomCard = ({ image, label, description, icon }: Props) => {
                   {!!description.title && (
                     <Text style={global.label}>{description.title}</Text>
                   )}
-                  <Text>{description.text}</Text>
+                  <Text style={styles.text}>{description.text}</Text>
                 </View>
-                <View>
+                <View style={{marginTop: height * 0.04}}>
                   <Text style={styles.price}>R$ {description.price}</Text>
                 </View>
               </View>
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   container: {
-    marginTop: height * 0.02,
+    marginTop: height * 0.03,
     backgroundColor: "#f6ecffff",
     borderRadius: 10,
     shadowColor: "#000",
@@ -82,6 +82,9 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+  },
+  text: {
+    fontSize: 15,
   },
   price: {
     fontSize: 17,
