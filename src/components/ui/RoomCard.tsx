@@ -1,21 +1,17 @@
 import { FontAwesome5, FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { Dimensions, Image, ImageSourcePropType, StyleSheet, Text, View } from "react-native";
 import { global } from "./styles";
-
 type NameIcon =
   | { lib: "MaterialIcons"; name: keyof typeof MaterialIcons.glyphMap }
   | { lib: "FontAwesome6"; name: keyof typeof FontAwesome6.glyphMap }
   | { lib: "FontAwesome5"; name: keyof typeof FontAwesome5.glyphMap };
-
 type Infos = { title?: string; text: string; price: number };
-
 type Props = {
   image?: ImageSourcePropType;
   label?: string;
   description?: Infos;
   icon?: NameIcon;
 };
-
 const { width, height } = Dimensions.get("window");
 const RoomCard = ({ image, label, description, icon }: Props) => {
   return (
@@ -25,9 +21,16 @@ const RoomCard = ({ image, label, description, icon }: Props) => {
       <View>
         {!!label && <Text style={{fontSize: 23, fontWeight: 600, marginTop: height * 0.02}}>{label}</Text>}
         <View style={styles.container}>
+          {!!description && (
+            <View>
+              {!!description.title && (
+                <Text style={global.label}>{description.title}</Text>
+              )}
+            </View>   
+          )}
           <View style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-evenly"}}>
             {!!icon && (
-              <View style={{marginTop: height * 0.04}}>
+              <View>
                 {icon.lib === "MaterialIcons" && (
                   <MaterialIcons name={icon.name} size={23} color="purple" />
                 )}
@@ -42,12 +45,9 @@ const RoomCard = ({ image, label, description, icon }: Props) => {
             {!!description && (
               <View style={styles.description}>
                 <View>
-                  {!!description.title && (
-                    <Text style={global.label}>{description.title}</Text>
-                  )}
                   <Text style={styles.text}>{description.text}</Text>
                 </View>
-                <View style={{marginTop: height * 0.04}}>
+                <View>
                   <Text style={styles.price}>R$ {description.price}</Text>
                 </View>
               </View>
@@ -58,7 +58,6 @@ const RoomCard = ({ image, label, description, icon }: Props) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   image: {
     height: height * 0.27,
@@ -70,7 +69,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   container: {
-    marginTop: height * 0.03,
+    padding: width * 0.02,
+    marginTop: height * 0.02,
     backgroundColor: "#f6ecffff",
     borderRadius: 10,
     shadowColor: "#000",

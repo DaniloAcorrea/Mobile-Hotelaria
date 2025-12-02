@@ -13,11 +13,11 @@ const RenderExplorer = () => {
   return (
     <AuthContainer>
       {/*children */}
-      <View style={{ display: "flex", /* flexDirection: "row", gap: width * 0.05,*/ justifyContent: "center"}}>  {/*Essa View vocês tinham e eu só estilizei*/}
+      <View style={{ display: "flex", justifyContent: "center"}}>                                                {/*Essa View vocês tinham e eu só estilizei*/}
         <View style={{ display: "flex", flexDirection: "column" }}>                                              {/*Criei esta nova View para check-in*/}
           {/* Input de checkIn para abrir calendário*/}
           <TouchableOpacity onPress={() => setCalendar("checkin")}>
-            <View style={{width: width * 0.8}}>  {/* 80% da tela para a área input*/}                            {/* Nova view para dar largura ao TextField */}
+            <View style={{width: width * 0.8}}>                                                                  {/* Nova view para dar largura ao TextField */}
               <TextField label="Check-in" icon={{ lib: "FontAwesome5", name: "calendar-alt" }} placeholder="Selecione a data" value={checkIn} />
             </View>                                                                                              {/* Fecha aqui */}
           </TouchableOpacity>
@@ -26,14 +26,12 @@ const RenderExplorer = () => {
             <DateSelector onSelectDate={(date) => {
                           setCheckIn(date); 
                           setCalendar(null);
-            }}
-            /> )}
+            }} /> )}
         </View>                                                                                                  {/*View de check-in fecha aqui */}
-
         <View style={{ display: "flex", flexDirection: "column" }}>                                              {/*Criei esta nova View para check-out*/}
           {/* Input de checkIn para abrir calendário*/}
           <TouchableOpacity onPress={() => setCalendar("checkout")}>
-            <View style={{width: width * 0.8}}>  {/* 80% da tela para a área input*/}                            {/* Nova view para dar largura ao TextField */}
+            <View style={{width: width * 0.8}}>                                                                  {/* Nova view para dar largura ao TextField */}
               <TextField label="Check-out" icon={{ lib: "FontAwesome5", name: "calendar-alt" }} placeholder="Selecione a data" value={checkOut} />
             </View>                                                                                              {/* Fecha aqui */}
           </TouchableOpacity>
@@ -45,7 +43,6 @@ const RenderExplorer = () => {
             }} /> )}
         </View>                                                                                                  {/*View do check-out que fecha aqui */}
       </View>
-
       <RoomCard 
         image={require("../../../assets/images/quarto.jpg")}
         /* image={{uri: "https://"}} */
@@ -60,7 +57,6 @@ const RenderExplorer = () => {
           price: 180.90
         }}
       />
-
     </AuthContainer>
   )};
 export default RenderExplorer;
