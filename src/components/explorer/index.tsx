@@ -40,13 +40,15 @@ const RenderExplorer = () => {
       </View>
 
       <RoomCard 
+        image={require("../../../assets/images/quarto.jpg")}
+        /* image={{uri: "https://"}} */
         label="Apartamento"
         icon={{
           lib: "FontAwesome5",
           name: "bed"
         }}
         description={{
-          title: "Características do quarto",
+          title: "Descrição do quarto",
           text: "1 cama de casal\n2 camas de solteiro",
           price: 180.90
         }}

@@ -1,5 +1,5 @@
 import { FontAwesome5, FontAwesome6, MaterialIcons } from "@expo/vector-icons";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, ImageSourcePropType, StyleSheet, Text, View } from "react-native";
 import { global } from "./styles";
 
 type NameIcon =
@@ -10,21 +10,22 @@ type NameIcon =
 type Infos = { title?: string; text: string; price: number };
 
 type Props = {
-  //image?:
+  image?: ImageSourcePropType;
   label?: string;
   description?: Infos;
   icon?: NameIcon;
 };
 
 const { width, height } = Dimensions.get("window");
-const RoomCard = ({ label, description, icon }: Props) => {
+const RoomCard = ({ image, label, description, icon }: Props) => {
   return (
     <View style={global.content}>
-      <View>{/* imagem */}</View>
+     {!!image &&
+      <View><Image style={styles.image} source={image} resizeMode="cover"/></View>}
       <View>
-        {!!label && <Text style={global.title}>{label}</Text>}
+        {!!label && <Text style={{fontSize: 23, fontWeight: 600, marginTop: height * 0.02}}>{label}</Text>}
         <View style={styles.container}>
-          <View>
+          <View style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-evenly"}}>
             {!!icon && (
               <View>
                 {icon.lib === "MaterialIcons" && (
@@ -47,7 +48,7 @@ const RoomCard = ({ label, description, icon }: Props) => {
                   <Text>{description.text}</Text>
                 </View>
                 <View>
-                  <Text>R$ {description.price}</Text>
+                  <Text style={styles.price}>R$ {description.price}</Text>
                 </View>
               </View>
             )}
@@ -59,9 +60,18 @@ const RoomCard = ({ label, description, icon }: Props) => {
 };
 
 const styles = StyleSheet.create({
+  image: {
+    height: height * 0.27,
+    width: "auto",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+  },
   container: {
-    marginTop: height * 0.03,
-    backgroundColor: "#f3e6ffff",
+    marginTop: height * 0.02,
+    backgroundColor: "#f6ecffff",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.05,
@@ -72,7 +82,11 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
   },
+  price: {
+    fontSize: 17,
+    fontWeight: 600,
+    color: "purple"
+  }
 });
 export default RoomCard;
