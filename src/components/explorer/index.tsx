@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dimensions, TouchableOpacity, View } from "react-native";
 import AuthContainer from "../ui/AuthContainer";
 import DateSelector from "../ui/DateSelector";
+import InputSpin from "../ui/InputSpin";
 import RoomCard from "../ui/RoomCard";
 import TextField from "../ui/TextField";
 const RenderExplorer = () => {
@@ -9,6 +10,7 @@ const RenderExplorer = () => {
   //useState() para gerenciar e alterar os estados
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const [qntGuests, setqntGuest] = useState("")
   const [calendar, setCalendar] = useState<"checkin" | "checkout" | null>(null);
   return (
     <AuthContainer>
@@ -41,8 +43,15 @@ const RenderExplorer = () => {
                           setCheckOut(date);
                           setCalendar(null)
             }} /> )}
-        </View>                                                                                                  {/*View do check-out que fecha aqui */}
+        </View>
+        {/*View do check-out que fecha aqui */}
       </View>
+      {/*View do check-out que fecha aqui */}
+      {/*InputSpin*/}
+      <view>
+        <Text style={global.label}>quantidade de hóspedes</Text>
+        <InputSpin />
+      </view>
       <RoomCard 
         image={require("../../../assets/images/quarto.jpg")}
         /* image={{uri: "https://"}} */
