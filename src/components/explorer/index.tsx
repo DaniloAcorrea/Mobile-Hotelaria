@@ -5,7 +5,8 @@ import DateSelector from "../ui/DateSelector";
 import InputSpin from "../ui/InputSpin";
 import RoomCard from "../ui/RoomCard";
 import TextField from "../ui/TextField";
-const RenderExplorer = () => {
+
+  const RenderExplorer = () => {
   const { width, height } = Dimensions.get("window");
   //useState() para gerenciar e alterar os estados
   const [checkIn, setCheckIn] = useState("");
@@ -82,20 +83,16 @@ const RenderExplorer = () => {
         {/* backdrop: qualquer clique aqui fora, fecha*/}
           <Pressable onPress={closeCalendar}>
             {/* área do calendário que, ao criar, não fecha */}
-            <Pressable onPress={() => {}} style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(0,0,0,0.29)",
-              }}>
-              {calendar === "checkout" && (
+            <Pressable onPress={() => {}}>
+              {calendar === "checkin" && (
                 <DateSelector
                   onSelectDate={(date) => {
-                    setCheckOut(date);
+                    setCheckIn(date);
                     setCalendar(null);
                   }}
                 />
               )}
+            
             </Pressable>
             
           </Pressable>
