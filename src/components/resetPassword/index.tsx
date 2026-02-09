@@ -77,8 +77,8 @@ const ForgotPasswordScreen = ({ navigation }: ForgotPasswordScreenProps) => {
       </View>
 
       {/* Botão */}
-      <TouchableOpacity
-        style={[
+          <TouchableOpacity
+          style={[
           styles.button,
           loading && { opacity: 0.7 },
         ]}
