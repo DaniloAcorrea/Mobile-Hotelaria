@@ -5,6 +5,8 @@ import PasswordField from "../ui/PasswordField";
 import TextField from "../ui/TextField";
 import { global } from "../ui/styles";
 import MaskInput from "react-native-mask-input";
+import { useAuth } from "@/contexts/AuthContexts"; 
+import { router } from "expo-router"; 
 
 const { width } = Dimensions.get("window");
 
@@ -12,6 +14,8 @@ const CPF_MASK = [/\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/
 const PHONE_MASK = ['(', /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
 
 const RenderAccount = () => {
+  const { signOut } = useAuth(); 
+
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -40,7 +44,7 @@ const RenderAccount = () => {
           keyboardType="default"
         />
 
-        {/* CPF com título "Seu CPF" */}
+
         <View style={{ marginBottom: 16 }}>
           <Text style={global.label}>CPF</Text>
           <MaskInput
@@ -53,7 +57,7 @@ const RenderAccount = () => {
           />
         </View>
 
-        {/* Telefone com título "Seu Telefone" */}
+
         <View style={{ marginBottom: 16 }}>
           <Text style={global.label}>Telefone</Text>
           <MaskInput
@@ -102,6 +106,24 @@ const RenderAccount = () => {
         >
           <Text style={global.primaryButtonText}>Alterar senha</Text>
         </TouchableOpacity>
+
+        {/* BOTÃO SAIR DA CONTA */}
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#B00020",
+            alignItems: "center",
+            padding: 15,
+            borderRadius: 8,
+            marginTop: 20,
+          }}
+          onPress={async () => {
+            await signOut();          
+            router.replace("/(auth)");
+          }}
+        >
+          <Text style={global.primaryButtonText}>Sair da Conta</Text>
+        </TouchableOpacity>
+
       </View>
 
       <Modal
@@ -190,11 +212,11 @@ const RenderAccount = () => {
   );
 };
 
-// Estilos para os títulos e inputs com máscara
+
 const styles = StyleSheet.create({
   label: {
     fontSize: 14,
-    color: "#420350ff", // mesma cor usada nos botões
+    color: "#420350ff",
     marginBottom: 6,
     fontWeight: "500",
   },

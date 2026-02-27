@@ -1,8 +1,17 @@
 /*Função: definir o fluxo de navegação entre as telas disponíveis em Tab Navigator:
 Explorar, Reservas, Perfil*/
+import { useAuth } from "@/contexts/AuthContexts";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 const TabLayout = () => {
+  const {token, isLoading} = useAuth();
+  
+  if(isLoading)return null;
+
+  if(!token){
+    return <Redirect href="/(auth)"/>;
+  }
+
   return (
     <Tabs
       screenOptions={{ tabBarActiveTintColor: "#420350ff", tabBarInactiveTintColor: "#7c7c7cff",

@@ -13,20 +13,27 @@ import TextField from "../ui/TextField";
 import PasswordField from "../ui/PasswordField";
 import MaskInput from "react-native-mask-input";
 import { global } from "../ui/styles";
+import { useAuth } from "@/contexts/AuthContexts";
 
-// Tipagem opcional para navigation (evita erros TS)
+
+
+
+
+
 interface RegisterScreenProps {
   navigation?: {
     navigate: (screen: string) => void;
-    // adicione outras funções se precisar: goBack, etc.
+
   };
 }
-// Máscaras
-const CPF_MASK = [/\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '-', /\d/, /\d/];
-const PHONE_MASK = ['(', /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
+
+const CPF_MASK = [/\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, "-", /\d/, /\d/];
+const PHONE_MASK = ["(", /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/];
 
 const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
   const router = useRouter();
+  const { signUp } = useAuth();
+
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -34,48 +41,49 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [loading, setLoading] = useState(false);
-  const handleRegister = () => {
-    // Validações básicas
+
+  const handleRegister = async () => {
     if (!nome.trim()) {
       Alert.alert("Erro", "O nome é obrigatório");
       return;
     }
-    if (cpf.length !== 14) { // 123.456.789-00 = 14 caracteres
+
+    if (cpf.length !== 14) {
       Alert.alert("Erro", "CPF inválido");
       return;
     }
-    if (telefone.length < 14) { // (11) 98765-4321 = 15 caracteres
+
+    if (telefone.length < 14) {
       Alert.alert("Erro", "Telefone inválido");
       return;
     }
+
     if (!email.includes("@")) {
       Alert.alert("Erro", "Email inválido");
       return;
     }
+
     if (senha.length < 6) {
       Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres");
       return;
     }
+
     if (senha !== confirmarSenha) {
       Alert.alert("Erro", "As senhas não coincidem");
       return;
     }
 
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // Simula requisição de cadastro
-    setTimeout(() => {
+      await signUp(nome, cpf, telefone, email, senha);
+
+      Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+    } catch (error: any) {
+      Alert.alert("Erro", error.message);
+    } finally {
       setLoading(false);
-      Alert.alert(
-        "Sucesso",
-        "Cadastro realizado com sucesso!",
-        [
-          { text: "OK", onPress: () => router.replace("/(tabs)/explorer") }
-        ]
-      );
-    }, 1500);
-
-  
+    }
   };
 
   return (
@@ -86,17 +94,19 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
       </View>
 
       <View style={{ marginBottom: 24 }}>
-        {/* Nome */}
+
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Seu Nome</Text>
           <TextField
             placeholder="Digite seu nome completo"
             value={nome}
             onChangeText={setNome}
-            keyboardType="default" label={""}          />
+            keyboardType="default"
+            label=""
+          />
         </View>
 
-        {/* CPF */}
+
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Seu CPF</Text>
           <MaskInput
@@ -109,7 +119,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           />
         </View>
 
-        {/* Telefone */}
+
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Seu Telefone</Text>
           <MaskInput
@@ -122,7 +132,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           />
         </View>
 
-        {/* Email */}
+
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Seu Email</Text>
           <TextField
@@ -130,27 +140,33 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
-            autoCapitalize="none" label={""}          />
+            autoCapitalize="none"
+            label=""
+          />
         </View>
 
-        {/* Senha */}
+
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Senha</Text>
           <PasswordField
             placeholder="Mínimo 6 caracteres"
             value={senha}
             onChangeText={setSenha}
-            secureTextEntry={true} label={""}          />
+            secureTextEntry={true}
+            label=""
+          />
         </View>
 
-        {/* Confirmar Senha */}
+
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Confirmar Senha</Text>
           <PasswordField
             placeholder="Digite novamente a senha"
             value={confirmarSenha}
             onChangeText={setConfirmarSenha}
-            secureTextEntry={true} label={""}          />
+            secureTextEntry={true}
+            label=""
+          />
         </View>
       </View>
 
@@ -176,18 +192,12 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => navigation?.navigate("Login")}
+        onPress={() => router.back()}
         style={{ alignItems: "center" }}
       >
-         <TouchableOpacity
-          onPress={() => router.back()}
-        >
-          <Text style={styles.loginLink}>
-            Já possui uma conta? <Text style={{ fontWeight: "600" }}>Login</Text>
-          </Text>
-            
-          </TouchableOpacity>
-       
+        <Text style={styles.loginLink}>
+          Já possui uma conta? <Text style={{ fontWeight: "600" }}>Login</Text>
+        </Text>
       </TouchableOpacity>
     </AuthContainer>
   );
