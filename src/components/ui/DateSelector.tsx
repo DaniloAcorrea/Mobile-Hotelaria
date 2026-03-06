@@ -1,34 +1,45 @@
 import { Dimensions, View } from "react-native";
 import DatePicker, { getToday } from "react-native-modern-datepicker";
+
 type Props = {
   onSelectDate: (date: string) => void;
 };
-const DateSelector = ({onSelectDate} : Props) => {
-  const { width, height } = Dimensions.get("window"); //Componente para dimensionar largura e altura (responsividade)
+
+const DateSelector = ({ onSelectDate }: Props) => {
+  const { width } = Dimensions.get("window");
   const today = getToday();
+
+  const handleChange = (date: string) => {
+    onSelectDate(date);
+  };
+
   return (
     <View>
       <DatePicker
         mode="calendar"
         options={{
-          backgroundColor: "#f0f0f0ff", //Fundo (background)
-          textHeaderColor: "#9e62acff", //Mês
-          textDefaultColor: "#420350ff", //Número (data)
-          selectedTextColor: "#fff", //Cor do número (data) quando selecionado
-          mainColor: "#9e62acff", //Setas laterais e seletor
-          textSecondaryColor: "#420350ff", //Dia da semana
-          borderColor: "#9e62acff", //Borda
-          textFontSize: 14, //Tamanho da fonte (dias da semana e número -> data)
-          textHeaderFontSize: 15, //Tamanho da fonte (mês)
+          backgroundColor: "#f0f0f0ff",
+          textHeaderColor: "#9e62acff",
+          textDefaultColor: "#420350ff",
+          selectedTextColor: "#fff",
+          mainColor: "#9e62acff",
+          textSecondaryColor: "#420350ff",
+          borderColor: "#9e62acff",
+          textFontSize: 14,
+          textHeaderFontSize: 15,
         }}
-        style={{ borderRadius: 15, width: width * 0.69, height: "auto" }}
+        style={{
+          borderRadius: 15,
+          width: width * 0.69,
+        }}
         isGregorian={true}
         minimumDate={today}
-        onSelectedChange={(date) => {
-          onSelectDate(date);
-        }}
+
+        onSelectedChange={handleChange}
+        onDateChange={handleChange}
       />
     </View>
   );
 };
+
 export default DateSelector;

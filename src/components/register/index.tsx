@@ -15,11 +15,6 @@ import MaskInput from "react-native-mask-input";
 import { global } from "../ui/styles";
 import { useAuth } from "@/contexts/AuthContexts";
 
-
-
-
-
-
 interface RegisterScreenProps {
   navigation?: {
     navigate: (screen: string) => void;

@@ -6,45 +6,50 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import AuthContainer from "../ui/AuthContainer";
 import { router, useLocalSearchParams } from "expo-router";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { useAuth } from "../../contexts/AuthContexts";
 
 interface Reservation {
   roomId: string;
   label: string;
   description: string;
   price: number;
-  quantity: number;
+  quantity: number; // Controle de x1, x2...
+  checkIn: string;
+  checkOut: string;
+  guests: number;
 }
 
 const CarrinhoReservas = () => {
+  const { reservar } = useAuth();
   const params = useLocalSearchParams();
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<"PIX" | "Cartão" | "Dinheiro">("PIX");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // evita loop infinito
   const lastPushId = useRef<string | null>(null);
 
-  /* =========================
-     ADD / INCREMENT
-  ========================= */
   useEffect(() => {
     if (!params?.pushId || params.pushId === lastPushId.current) return;
-
     lastPushId.current = String(params.pushId);
+
     const roomId = String(params.roomId);
 
     setReservations((prev) => {
       const exists = prev.find((r) => r.roomId === roomId);
 
       if (exists) {
+        // Se já existe, aumenta a quantidade (x1 -> x2)
         return prev.map((r) =>
-          r.roomId === roomId
-            ? { ...r, quantity: r.quantity + 1 }
-            : r
+          r.roomId === roomId ? { ...r, quantity: r.quantity + 1 } : r
         );
       }
 
+      // Se não existe, adiciona novo
       return [
         ...prev,
         {
@@ -53,63 +58,62 @@ const CarrinhoReservas = () => {
           description: String(params.description ?? ""),
           price: Number(params.price),
           quantity: 1,
+          checkIn: String(params.checkIn),
+          checkOut: String(params.checkOut),
+          guests: Number(params.guests),
         },
       ];
     });
   }, [params]);
 
-  /* =========================
-     TOTAL
-  ========================= */
-  const total = reservations.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  const total = reservations.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  /* =========================
-     REMOVE (-1 ou remove)
-  ========================= */
-  const removerReserva = (roomId: string) => {
+  const removerUm = (roomId: string) => {
     setReservations((prev) =>
-      prev.map((item) => {
+      prev
+        .map((item) => {
           if (item.roomId !== roomId) return item;
-
-          if (item.quantity > 1) {
-            return { ...item, quantity: item.quantity - 1 };
-          }
-
-          return null;
+          if (item.quantity > 1) return { ...item, quantity: item.quantity - 1 };
+          return null; // Remove se chegar a 0
         })
         .filter(Boolean) as Reservation[]
     );
   };
 
-  /* =========================
-     FINALIZAR
-  ========================= */
-  const finalizarReserva = () => {
-    if (reservations.length === 0) {
-      Alert.alert("Carrinho vazio");
-      return;
-    }
+  const finalizarReserva = async () => {
+    if (reservations.length === 0) return;
 
-    Alert.alert(
-      "Reserva confirmada",
-      `Total: R$ ${total.toFixed(2)}`,
-      [
+    try {
+      setIsSubmitting(true);
+
+      for (const item of reservations) {
+        // Se o usuário selecionou x2, fazemos a reserva o número de vezes da quantidade
+        for (let i = 0; i < item.quantity; i++) {
+          await reservar(
+            Number(item.roomId.replace(/\D/g, "")),
+            item.checkIn,
+            item.checkOut,
+            paymentMethod
+          );
+        }
+      }
+
+      Alert.alert("Sucesso!", "Reservas confirmadas!", [
         {
           text: "OK",
           onPress: () => {
             setReservations([]);
+            router.replace("/explorer");
           },
         },
-      ]
-    );
+      ]);
+    } catch (error: any) {
+      Alert.alert("Erro", error.message || "Falha na reserva.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  /* =========================
-     RENDER
-  ========================= */
   return (
     <AuthContainer>
       <ScrollView style={styles.container}>
@@ -117,17 +121,9 @@ const CarrinhoReservas = () => {
 
         {reservations.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-              Nenhuma reserva adicionada
-            </Text>
-
-            <TouchableOpacity
-              style={styles.continuarBtn}
-              onPress={() => router.replace("/explorer")}
-            >
-              <Text style={styles.continuarText}>
-                Voltar para explorar
-              </Text>
+            <Text style={styles.emptyText}>Carrinho vazio</Text>
+            <TouchableOpacity style={styles.continuarBtn} onPress={() => router.replace("/explorer")}>
+              <Text style={styles.continuarText}>Explorar Quartos</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -136,42 +132,58 @@ const CarrinhoReservas = () => {
               <View key={item.roomId} style={styles.card}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.roomTitle}>{item.label}</Text>
-
-                  <Text style={styles.roomDesc}>
-                    {item.description}
-                  </Text>
+                  
+                  <View style={styles.infoRow}>
+                    <FontAwesome5 name="calendar-alt" size={12} color="#666" />
+                    <Text style={styles.infoText}> {item.checkIn} — {item.checkOut}</Text>
+                  </View>
 
                   <Text style={styles.roomPrice}>
-                    R$ {item.price.toFixed(2)} x {item.quantity}
+                    R$ {item.price.toFixed(2)} <Text style={styles.quantityText}>x {item.quantity}</Text>
                   </Text>
-
+                  
                   <Text style={styles.subtotal}>
                     Subtotal: R$ {(item.price * item.quantity).toFixed(2)}
                   </Text>
                 </View>
 
-                <TouchableOpacity
-                  onPress={() => removerReserva(item.roomId)}
+                <TouchableOpacity 
+                  style={styles.removeBtn} 
+                  onPress={() => removerUm(item.roomId)}
                 >
-                  <Text style={styles.removeText}>Remover</Text>
+                  <FontAwesome5 name="minus-circle" size={20} color="#d32f2f" />
                 </TouchableOpacity>
               </View>
             ))}
 
             <View style={styles.totalBox}>
-              <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>
-                R$ {total.toFixed(2)}
-              </Text>
+              <Text style={styles.totalLabel}>Total Geral</Text>
+              <Text style={styles.totalValue}>R$ {total.toFixed(2)}</Text>
             </View>
 
-            <TouchableOpacity
-              style={styles.finalizarBtn}
+            <View style={styles.paymentSection}>
+              <Text style={styles.paymentTitle}>Forma de Pagamento</Text>
+              <View style={styles.paymentOptions}>
+                {["PIX", "Debito"].map((method) => (
+                  <TouchableOpacity
+                    key={method}
+                    style={[styles.paymentBtn, paymentMethod === method && styles.paymentBtnActive]}
+                    onPress={() => setPaymentMethod(method as any)}
+                  >
+                    <Text style={[styles.paymentBtnText, paymentMethod === method && styles.paymentBtnTextActive]}>
+                      {method}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.finalizarBtn, isSubmitting && { opacity: 0.7 }]} 
               onPress={finalizarReserva}
+              disabled={isSubmitting}
             >
-              <Text style={styles.finalizarText}>
-                Finalizar Reserva
-              </Text>
+              {isSubmitting ? <ActivityIndicator color="white" /> : <Text style={styles.finalizarText}>Finalizar Reserva</Text>}
             </TouchableOpacity>
           </>
         )}
@@ -182,93 +194,31 @@ const CarrinhoReservas = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  emptyContainer: {
-    alignItems: "center",
-    marginTop: 120,
-  },
-  emptyText: {
-    fontSize: 18,
-    color: "#777",
-    marginBottom: 24,
-  },
-  continuarBtn: {
-    backgroundColor: "#420350ff",
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 10,
-  },
-  continuarText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    flexDirection: "row",
-    elevation: 2,
-  },
-  roomTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  roomDesc: {
-    fontSize: 14,
-    color: "#666",
-    marginVertical: 6,
-  },
-  roomPrice: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#420350ff",
-  },
-  subtotal: {
-    fontSize: 14,
-    color: "#333",
-    marginTop: 4,
-  },
-  removeText: {
-    color: "#d32f2f",
-    fontWeight: "600",
-  },
-  totalBox: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderColor: "#eee",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  totalValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#420350ff",
-  },
-  finalizarBtn: {
-    backgroundColor: "#420350ff",
-    paddingVertical: 18,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 24,
-    marginBottom: 40,
-  },
-  finalizarText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  emptyContainer: { alignItems: "center", marginTop: 100 },
+  emptyText: { fontSize: 18, color: "#777", marginBottom: 20 },
+  continuarBtn: { backgroundColor: "#420350ff", padding: 15, borderRadius: 10 },
+  continuarText: { color: "white", fontWeight: "bold" },
+  card: { backgroundColor: "#fff", borderRadius: 12, padding: 16, marginBottom: 16, flexDirection: "row", elevation: 3 },
+  roomTitle: { fontSize: 17, fontWeight: "bold" },
+  infoRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 4 },
+  infoText: { fontSize: 13, color: '#666', marginLeft: 5 },
+  roomPrice: { fontSize: 15, fontWeight: "600", color: "#420350ff" },
+  quantityText: { color: "#333", fontWeight: "bold" },
+  subtotal: { fontSize: 13, color: "#888", marginTop: 2 },
+  removeBtn: { justifyContent: 'center', paddingLeft: 10 },
+  totalBox: { marginTop: 10, paddingVertical: 15, borderTopWidth: 1, borderColor: "#eee", flexDirection: "row", justifyContent: "space-between" },
+  totalLabel: { fontSize: 18, fontWeight: "bold" },
+  totalValue: { fontSize: 20, fontWeight: "bold", color: "#420350ff" },
+  paymentSection: { marginTop: 20 },
+  paymentTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 10 },
+  paymentOptions: { flexDirection: "row", justifyContent: "space-between" },
+  paymentBtn: { flex: 1, backgroundColor: "#f0f0f0", padding: 10, borderRadius: 8, alignItems: "center", marginHorizontal: 3 },
+  paymentBtnActive: { backgroundColor: "#420350ff" },
+  paymentBtnText: { color: "#555", fontWeight: "600" },
+  paymentBtnTextActive: { color: "#fff" },
+  finalizarBtn: { backgroundColor: "#420350ff", padding: 18, borderRadius: 12, alignItems: "center", marginTop: 30, marginBottom: 40 },
+  finalizarText: { color: "white", fontSize: 18, fontWeight: "bold" },
 });
 
 export default CarrinhoReservas;
